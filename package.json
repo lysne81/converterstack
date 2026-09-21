@@ -1,0 +1,35 @@
+{
+  "name": "unitconverter",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "predev": "./scripts/copy_pdf_worker.sh",
+    "dev": "next dev",
+    "prebuild": "./scripts/copy_pdf_worker.sh",
+    "build": "next build --webpack",
+    "start": "next start",
+    "lint": "eslint",
+    "deploy": "./scripts/fetch_currencies.sh && ./scripts/fetch_rates.sh && npm run build && wrangler pages deploy out"
+  },
+  "dependencies": {
+    "@cantoo/pdf-lib": "^2.11.1",
+    "@mediabunny/mp3-encoder": "^1.58.0",
+    "heic-to": "^1.5.2",
+    "mediabunny": "^1.58.0",
+    "next": "16.3.3",
+    "pdfjs-dist": "^6.3.289",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.3",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "wrangler": "^4.127.0"
+  }
+}
