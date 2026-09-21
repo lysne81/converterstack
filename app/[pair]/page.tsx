@@ -16,6 +16,7 @@ import {
   parseSlug,
   slugFor,
 } from "../lib/units";
+import { SITE_URL, OG_IMAGE } from "../lib/site";
 
 type Params = { pair: string };
 
@@ -37,7 +38,26 @@ export async function generateMetadata({
   if (!parsed) return { title: "Unit Converter" };
   const { from, to } = parsed;
   const title = `Convert ${from.label} to ${to.label}`;
-  return { title, description: `${title} (${from.symbol} to ${to.symbol}).` };
+  const description = `${title} (${from.symbol} to ${to.symbol}).`;
+  const canonical = `${SITE_URL}/${slugFor(from, to)}`;
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      type: "website",
+      url: canonical,
+      title,
+      description,
+      images: [OG_IMAGE],
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+      images: [OG_IMAGE.url],
+    },
+  };
 }
 
 export default async function ConverterPage({

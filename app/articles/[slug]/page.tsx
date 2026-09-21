@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ArticleLayout from "../../components/articles/ArticleLayout";
-import { SITE_URL } from "../../lib/site";
+import { SITE_URL, OG_IMAGE } from "../../lib/site";
 import { getAllArticles, getArticle } from "../articles";
 
 type Params = { slug: string };
@@ -38,6 +38,7 @@ export async function generateMetadata({
       description: article.description,
       publishedTime: article.publishedAt,
       modifiedTime: article.updatedAt,
+      images: [OG_IMAGE],
     },
   };
 }

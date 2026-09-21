@@ -16,23 +16,98 @@ import {
   getPopularFileConversions,
 } from "../lib/files/registry";
 import { FORMAT_KIND_HEADINGS } from "../lib/files/formats";
+import { SITE_URL, OG_IMAGE } from "../lib/site";
 import type { FileConversion, FileFormat, FormatKind } from "../lib/files/types";
+
+const CANONICAL = `${SITE_URL}/files`;
+
+const DESCRIPTION =
+  "Convert images, audio, video and PDF files — HEIC, PNG, JPG, WEBP, MP3, WAV, FLAC, MP4, MOV, MKV and more — directly in your browser, without uploading anything.";
 
 export const metadata: Metadata = {
   title: "File converter",
-  description:
-    "Convert images, audio, video and PDF files — HEIC, PNG, JPG, WEBP, MP3, WAV, FLAC, MP4, MOV, MKV and more — directly in your browser, without uploading anything.",
+  description: DESCRIPTION,
+  alternates: { canonical: CANONICAL },
+  openGraph: {
+    type: "website",
+    url: CANONICAL,
+    title: "File converter — no upload, runs in your browser",
+    description: DESCRIPTION,
+    images: [OG_IMAGE],
+  },
+  twitter: {
+    card: "summary",
+    title: "File converter — no upload, runs in your browser",
+    description: DESCRIPTION,
+    images: [OG_IMAGE.url],
+  },
 };
+
+/**
+ * Questions people actually search before trusting a converter. Rendered both
+ * as visible copy and as FAQPage structured data, so the "nothing is uploaded"
+ * answer can surface directly in search results.
+ */
+const FAQ: { question: string; answer: string }[] = [
+  {
+    question: "Are my files uploaded to a server?",
+    answer:
+      "No. Every conversion runs locally in your browser using your own device's CPU. Your files are never uploaded, never transmitted over the network and never stored on a server.",
+  },
+  {
+    question: "Is there a file size limit?",
+    answer:
+      "There is no imposed limit, because nothing is uploaded. The practical ceiling is your device's available memory, so very large video files may be slower on older hardware.",
+  },
+  {
+    question: "Does it work offline?",
+    answer:
+      "Yes. Once the page has loaded, file conversion keeps working without a network connection, since the conversion happens entirely on your device.",
+  },
+  {
+    question: "Do I need to sign up or install anything?",
+    answer:
+      "No. There is no sign-up, no account and no software to install. Open the page, pick a file and convert.",
+  },
+  {
+    question: "Is it free?",
+    answer:
+      "Yes, all conversions are free to use, with no watermarks and no daily quota.",
+  },
+];
 
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
   name: "File converter",
+  url: CANONICAL,
   applicationCategory: "UtilityApplication",
   operatingSystem: "Any",
+  browserRequirements: "Requires a modern browser with JavaScript enabled.",
+  isAccessibleForFree: true,
+  permissions: "none",
+  storageRequirements: "No server storage — files are processed in memory on your device.",
+  featureList: [
+    "No file upload required — conversion runs locally in your browser",
+    "Files never leave your device",
+    "No sign-up or installation",
+    "No file size limit imposed by a server",
+    "Works offline once the page has loaded",
+    "Image, audio, video and PDF conversion",
+  ],
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   description:
     "Convert image, audio, video and PDF files between formats: HEIC, PNG, JPG, WEBP, AVIF, SVG, MP3, WAV, M4A, FLAC, OPUS, MP4, WEBM, MOV, MKV and PDF. Conversion runs locally in the browser, so files are never uploaded.",
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: FAQ.map(({ question, answer }) => ({
+    "@type": "Question",
+    name: question,
+    acceptedAnswer: { "@type": "Answer", text: answer },
+  })),
 };
 
 /** One-line summary shown under each kind heading. */
@@ -109,12 +184,16 @@ export default function FilesPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <main className="flex w-full max-w-2xl flex-col gap-6 sm:gap-8">
         <div className="flex flex-col gap-2">
           <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
             File converter
           </h1>
-          <p className="hidden text-sm text-zinc-600 sm:block dark:text-zinc-400">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
             Convert images, audio, video and PDF files right here in the
             browser. Your files never leave your device.
           </p>
@@ -187,6 +266,34 @@ export default function FilesPage() {
         ))}
 
         <RecentConverters />
+
+        <section
+          id="faq"
+          aria-labelledby="faq-heading"
+          className="flex scroll-mt-6 flex-col gap-4"
+        >
+          <h2
+            id="faq-heading"
+            className="text-lg font-semibold tracking-tight"
+          >
+            Private by design — no upload, no sign-up
+          </h2>
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+            ConverterStack converts files locally, using your own browser. Your
+            files are never uploaded to a server, so they stay on your device
+            from start to finish.
+          </p>
+          <dl className="flex flex-col gap-4">
+            {FAQ.map(({ question, answer }) => (
+              <div key={question} className="flex flex-col gap-1">
+                <dt className="text-sm font-semibold">{question}</dt>
+                <dd className="text-sm text-zinc-600 dark:text-zinc-400">
+                  {answer}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </section>
 
         <RelatedArticles route="/files" />
       </main>

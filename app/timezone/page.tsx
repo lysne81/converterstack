@@ -5,11 +5,29 @@ import ConverterSearch from "../components/ConverterSearch";
 import RecentConverters from "../components/RecentConverters";
 import RelatedArticles from "../components/articles/RelatedArticles";
 import Link from "next/link";
+import { SITE_URL, OG_IMAGE } from "../lib/site";
+
+const CANONICAL = `${SITE_URL}/timezone`;
+const DESCRIPTION =
+  "Convert the time between any two world time zones (DST-aware).";
 
 export const metadata: Metadata = {
   title: "Time zone converter",
-  description:
-    "Convert the time between any two world time zones (DST-aware).",
+  description: DESCRIPTION,
+  alternates: { canonical: CANONICAL },
+  openGraph: {
+    type: "website",
+    url: CANONICAL,
+    title: "Time zone converter",
+    description: DESCRIPTION,
+    images: [OG_IMAGE],
+  },
+  twitter: {
+    card: "summary",
+    title: "Time zone converter",
+    description: DESCRIPTION,
+    images: [OG_IMAGE.url],
+  },
 };
 
 const jsonLd = {

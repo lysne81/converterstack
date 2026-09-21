@@ -1,8 +1,14 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import HomeConverter from "./components/HomeConverter";
 import PopularConverters from "./components/PopularConverters";
 import RecentConverters from "./components/RecentConverters";
 import ConverterSearch from "./components/ConverterSearch";
+import { SITE_URL } from "./lib/site";
+
+export const metadata: Metadata = {
+  alternates: { canonical: SITE_URL },
+};
 
 export default function Home() {
   return (

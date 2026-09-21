@@ -4,6 +4,7 @@ import Link from "next/link";
 import "./globals.css";
 import SiteHeader from "./components/SiteHeader";
 import { THEME_INIT_SCRIPT } from "./lib/theme";
+import { SITE_URL, OG_IMAGE } from "./lib/site";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,6 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "ConverterStack — Unit, Exchange Rate & Time Zone Converter",
     template: "%s · ConverterStack",
@@ -33,6 +35,22 @@ export const metadata: Metadata = {
     "exchange rates",
     "time zone converter",
   ],
+  openGraph: {
+    type: "website",
+    siteName: "ConverterStack",
+    url: SITE_URL,
+    title: "ConverterStack — Unit, Exchange Rate & Time Zone Converter",
+    description:
+      "Free converters for units, live exchange rates, time zones and files. File conversions run entirely in your browser — nothing is ever uploaded.",
+    images: [OG_IMAGE],
+  },
+  twitter: {
+    card: "summary",
+    title: "ConverterStack — Unit, Exchange Rate & Time Zone Converter",
+    description:
+      "Free converters for units, live exchange rates, time zones and files. File conversions run entirely in your browser — nothing is ever uploaded.",
+    images: [OG_IMAGE.url],
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

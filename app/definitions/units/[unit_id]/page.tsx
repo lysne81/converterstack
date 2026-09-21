@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import UnitDefinitionLayout from "../../../components/definitions/UnitDefinitionLayout";
-import { SITE_URL } from "../../../lib/site";
+import { SITE_URL, OG_IMAGE } from "../../../lib/site";
 import {
   getAllDefinitions,
   getDefinition,
@@ -43,6 +43,7 @@ export async function generateMetadata({
       url: canonical,
       title: `${name} (${definition.unit.symbol})`,
       description,
+      images: [OG_IMAGE],
     },
   };
 }

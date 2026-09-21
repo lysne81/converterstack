@@ -4,11 +4,29 @@ import CurrencyConverter from "../components/CurrencyConverter";
 import ConverterSearch from "../components/ConverterSearch";
 import RecentConverters from "../components/RecentConverters";
 import RelatedArticles from "../components/articles/RelatedArticles";
+import { SITE_URL, OG_IMAGE } from "../lib/site";
+
+const CANONICAL = `${SITE_URL}/exchangerate`;
+const DESCRIPTION =
+  "Convert between world currencies using daily exchange rates.";
 
 export const metadata: Metadata = {
   title: "Exchange rates converter",
-  description:
-    "Convert between world currencies using daily exchange rates.",
+  description: DESCRIPTION,
+  alternates: { canonical: CANONICAL },
+  openGraph: {
+    type: "website",
+    url: CANONICAL,
+    title: "Exchange rates converter",
+    description: DESCRIPTION,
+    images: [OG_IMAGE],
+  },
+  twitter: {
+    card: "summary",
+    title: "Exchange rates converter",
+    description: DESCRIPTION,
+    images: [OG_IMAGE.url],
+  },
 };
 
 const jsonLd = {

@@ -2,10 +2,28 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import ConverterBrowser from "../components/ConverterBrowser";
 import ConverterSearch from "../components/ConverterSearch";
+import { SITE_URL, OG_IMAGE } from "../lib/site";
+
+const CANONICAL = `${SITE_URL}/browse`;
+const DESCRIPTION = "Browse every available unit converter by category.";
 
 export const metadata: Metadata = {
   title: "Browse all converters",
-  description: "Browse every available unit converter by category.",
+  description: DESCRIPTION,
+  alternates: { canonical: CANONICAL },
+  openGraph: {
+    type: "website",
+    url: CANONICAL,
+    title: "Browse all converters",
+    description: DESCRIPTION,
+    images: [OG_IMAGE],
+  },
+  twitter: {
+    card: "summary",
+    title: "Browse all converters",
+    description: DESCRIPTION,
+    images: [OG_IMAGE.url],
+  },
 };
 
 export default function BrowsePage() {

@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import SectionHeading from "../components/SectionHeading";
+import { SITE_URL } from "../lib/site";
 
 export const metadata: Metadata = {
   title: "Third-party licences",
   description:
     "Open-source libraries used by ConverterStack, with versions, licences, source links and the notices required by the LGPL, MPL and Apache licences.",
+  alternates: { canonical: `${SITE_URL}/licenses` },
 };
 
 function ExternalLink({ href, children }: { href: string; children: string }) {

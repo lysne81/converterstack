@@ -6,6 +6,7 @@ import {
   type ArticleCategory,
   type ArticleDefinition,
 } from "./articles";
+import { SITE_URL } from "../lib/site";
 
 const publishedArticles = getPublishedArticles();
 
@@ -40,6 +41,7 @@ export const metadata: Metadata = {
     publishedArticles.length > 0
       ? { index: true, follow: true }
       : { index: false, follow: true },
+  alternates: { canonical: `${SITE_URL}/articles` },
 };
 
 export default function ArticlesPage() {

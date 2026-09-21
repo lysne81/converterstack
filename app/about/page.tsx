@@ -2,11 +2,13 @@ import type {Metadata} from "next";
 import Link from "next/link";
 import ConverterSearch from "../components/ConverterSearch";
 import SectionHeading from "../components/SectionHeading";
+import { SITE_URL } from "../lib/site";
 
 export const metadata: Metadata = {
     title: "About",
     description:
         "ConverterStack is a fast, no-fuss collection of unit converters for as many purposes as possible.",
+    alternates: { canonical: `${SITE_URL}/about` },
 };
 
 export default function AboutPage() {

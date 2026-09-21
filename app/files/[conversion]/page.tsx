@@ -16,6 +16,7 @@ import {
   parseFileSlug,
 } from "../../lib/files/registry";
 import type { FileConversion } from "../../lib/files/types";
+import { SITE_URL, OG_IMAGE } from "../../lib/site";
 
 type Params = { conversion: string };
 
@@ -31,6 +32,39 @@ function privacyLine(conversion: FileConversion): string {
   return isHeavy(conversion)
     ? "Everything runs on your device, so even large files never leave it."
     : "Everything happens on your device — no upload, no waiting, no limits.";
+}
+
+/**
+ * Questions people actually search before trusting a converter. Rendered both
+ * as visible copy and as FAQPage structured data, so the "nothing is uploaded"
+ * answer can surface directly in search results.
+ */
+function faqFor(conversion: FileConversion): { question: string; answer: string }[] {
+  const { from, to } = conversion;
+  return [
+    {
+      question: `Are my ${from.label} files uploaded to a server?`,
+      answer: `No. The ${from.label} to ${to.label} conversion runs locally in your browser using your own device's CPU. Your files are never uploaded, never transmitted over the network and never stored on a server.`,
+    },
+    {
+      question: `Is there a file size limit for ${from.label} to ${to.label}?`,
+      answer:
+        "There is no imposed limit, because nothing is uploaded. The practical ceiling is your device's available memory, so very large files may be slower on older hardware.",
+    },
+    {
+      question: "Does it work offline?",
+      answer: `Yes. Once the page has loaded, converting ${from.label} to ${to.label} keeps working without a network connection, since the conversion happens entirely on your device.`,
+    },
+    {
+      question: "Do I need to sign up or install anything?",
+      answer: `No. There is no sign-up, no account and no software to install. Pick a ${from.label} file and convert it to ${to.label} straight away.`,
+    },
+    {
+      question: `Is converting ${from.label} to ${to.label} free?`,
+      answer:
+        "Yes, it is free to use, with no watermarks and no daily quota.",
+    },
+  ];
 }
 
 export function generateStaticParams(): Params[] {
@@ -54,9 +88,25 @@ export async function generateMetadata({
   const promise = isHeavy(parsed)
     ? "free, private and never uploaded"
     : "free, instant and completely private";
+  const description = `${title} in your browser — ${promise}. ${describeFileConversion(parsed)}`;
+  const canonical = `${SITE_URL}/files/${fileSlugFor(from, to)}`;
   return {
     title,
-    description: `${title} in your browser — ${promise}. ${describeFileConversion(parsed)}`,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      type: "website",
+      url: canonical,
+      title: `${title} — no upload, runs in your browser`,
+      description,
+      images: [OG_IMAGE],
+    },
+    twitter: {
+      card: "summary",
+      title: `${title} — no upload, runs in your browser`,
+      description,
+      images: [OG_IMAGE.url],
+    },
   };
 }
 
@@ -74,15 +124,40 @@ export default async function FileConversionPage({
 
   const related = getConversionsFrom(from).filter((c) => c.to.id !== to.id);
   const notes = conversionNotes(parsed);
+  const faq = faqFor(parsed);
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
     name: `Convert ${from.label} to ${to.label}`,
+    url: `${SITE_URL}/files/${slug}`,
     applicationCategory: "UtilityApplication",
     operatingSystem: "Any",
+    browserRequirements: "Requires a modern browser with JavaScript enabled.",
+    isAccessibleForFree: true,
+    permissions: "none",
+    storageRequirements:
+      "No server storage — files are processed in memory on your device.",
+    featureList: [
+      "No file upload required — conversion runs locally in your browser",
+      "Files never leave your device",
+      "No sign-up or installation",
+      "No file size limit imposed by a server",
+      "Works offline once the page has loaded",
+      `Converts ${from.label} to ${to.label}`,
+    ],
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
     description: `${describeFileConversion(parsed)} Files are converted locally in your browser and never uploaded.`,
+  };
+
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map(({ question, answer }) => ({
+      "@type": "Question",
+      name: question,
+      acceptedAnswer: { "@type": "Answer", text: answer },
+    })),
   };
 
   return (
@@ -90,6 +165,10 @@ export default async function FileConversionPage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
       <main className="flex w-full max-w-2xl flex-col gap-6 sm:gap-8">
         <div className="flex flex-col gap-2">
@@ -99,7 +178,7 @@ export default async function FileConversionPage({
             </span>
             {from.label} to {to.label}
           </h1>
-          <p className="hidden text-sm text-zinc-600 sm:block dark:text-zinc-400">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
             {describeFileConversion(parsed)} {privacyLine(parsed)}
           </p>
         </div>
@@ -169,6 +248,34 @@ export default async function FileConversionPage({
         )}
 
         <RecentConverters />
+
+        <section
+          id="faq"
+          aria-labelledby="faq-heading"
+          className="flex scroll-mt-6 flex-col gap-4"
+        >
+          <h2
+            id="faq-heading"
+            className="text-lg font-semibold tracking-tight"
+          >
+            Private by design — no upload, no sign-up
+          </h2>
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+            This {from.label} to {to.label} converter runs locally, using your
+            own browser. Your files are never uploaded to a server, so they stay
+            on your device from start to finish.
+          </p>
+          <dl className="flex flex-col gap-4">
+            {faq.map(({ question, answer }) => (
+              <div key={question} className="flex flex-col gap-1">
+                <dt className="text-sm font-semibold">{question}</dt>
+                <dd className="text-sm text-zinc-600 dark:text-zinc-400">
+                  {answer}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </section>
 
         <RelatedArticles route={`/files/${slug}`} />
       </main>
