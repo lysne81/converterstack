@@ -75,6 +75,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <Link href="/licenses" className="hover:underline">
                 Licences
               </Link>
+              <a
+                href="https://github.com/lysne81/converterstack"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:underline"
+              >
+                GitHub
+              </a>
             </nav>
             <p className="text-xs text-zinc-500 dark:text-zinc-400">
               Fast, no-fuss converters.

@@ -28,6 +28,19 @@ export default function AboutPage() {
                         No sign-ups, no clutter, no fuzz. Pick your units, type a value, and
                         get the answer instantly.
                     </p>
+                    <p>
+                        ConverterStack is open source under the MIT licence. The code is
+                        available on{" "}
+                        <Link
+                            href="https://github.com/lysne81/converterstack"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-blue-600 hover:underline dark:text-blue-400"
+                        >
+                            GitHub
+                        </Link>
+                        {" "}— bug reports, feature ideas and pull requests are welcome.
+                    </p>
                 </div>
 
                 <section id="how-it-works" className="flex scroll-mt-6 flex-col gap-6">

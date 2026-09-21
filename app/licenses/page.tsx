@@ -314,6 +314,17 @@ export default function LicensesPage() {
             retained in the files served to your browser. If an attribution here
             is missing or wrong, please let us know.
           </p>
+          <p>
+            ConverterStack itself is open source under the{" "}
+            <ExternalLink href="https://github.com/lysne81/converterstack/blob/main/LICENSE">
+              MIT licence
+            </ExternalLink>
+            . View or contribute to the source on{" "}
+            <ExternalLink href="https://github.com/lysne81/converterstack">
+              GitHub
+            </ExternalLink>
+            .
+          </p>
         </div>
 
         <Link
