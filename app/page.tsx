@@ -9,7 +9,7 @@ export default function Home() {
     <div className="app-bg flex flex-1 items-start justify-center px-6 pb-16 pt-6">
       <main className="flex w-full max-w-2xl flex-col gap-8">
         <p className="hidden text-zinc-600 sm:block dark:text-zinc-400">
-          Fast, live conversions for units, exchange rates, time zones and
+          Fast, live conversions for  units, files, exchange rates, time zones and
           more.
         </p>
 
