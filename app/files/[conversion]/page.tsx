@@ -16,6 +16,7 @@ import {
   parseFileSlug,
 } from "../../lib/files/registry";
 import type { FileConversion } from "../../lib/files/types";
+import { MERGE_PDF_TOOL } from "../../lib/files/tools";
 import { SITE_URL, OG_IMAGE } from "../../lib/site";
 
 type Params = { conversion: string };
@@ -244,6 +245,18 @@ export default async function FileConversionPage({
                 </li>
               ))}
             </ul>
+          </section>
+        )}
+
+        {(from.id === "pdf" || to.id === "pdf") && (
+          <section className="flex flex-col gap-3">
+            <SectionHeading>PDF tools</SectionHeading>
+            <Link
+              href={MERGE_PDF_TOOL.href}
+              className="w-fit rounded-full border border-black/10 px-3 py-1.5 text-sm transition-colors hover:bg-black/[.05] dark:border-white/15 dark:hover:bg-white/[.08]"
+            >
+              {MERGE_PDF_TOOL.title} — {MERGE_PDF_TOOL.subtitle.toLowerCase()}
+            </Link>
           </section>
         )}
 

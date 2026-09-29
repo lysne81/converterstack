@@ -4,6 +4,7 @@ import { useSyncExternalStore } from "react";
 import { getRecentSnapshot, subscribeRecent } from "../lib/recent";
 import { parseSlug } from "../lib/units";
 import { parseFileSlug } from "../lib/files/registry";
+import { FILE_TOOLS } from "../lib/files/tools";
 import ConverterCard from "./ConverterCard";
 import SectionHeading, { HistoryIcon } from "./SectionHeading";
 
@@ -36,7 +37,22 @@ export default function RecentConverters() {
             );
           }
           if (entry.slug.startsWith("files/")) {
-            const conversion = parseFileSlug(entry.slug.slice("files/".length));
+            const slug = entry.slug.slice("files/".length);
+            const tool = FILE_TOOLS.find((t) => t.slug === slug);
+            if (tool) {
+              return (
+                <li key={entry.slug}>
+                  <ConverterCard
+                    href={tool.href}
+                    kind="file"
+                    eyebrow="PDF tool"
+                    title={tool.title}
+                    subtitle={tool.subtitle}
+                  />
+                </li>
+              );
+            }
+            const conversion = parseFileSlug(slug);
             if (!conversion) return null;
             return (
               <li key={entry.slug}>

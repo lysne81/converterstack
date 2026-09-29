@@ -16,6 +16,7 @@ import {
   getPopularFileConversions,
 } from "../lib/files/registry";
 import { FORMAT_KIND_HEADINGS } from "../lib/files/formats";
+import { FILE_TOOLS } from "../lib/files/tools";
 import { SITE_URL, OG_IMAGE } from "../lib/site";
 import type { FileConversion, FileFormat, FormatKind } from "../lib/files/types";
 
@@ -94,6 +95,7 @@ const jsonLd = {
     "No file size limit imposed by a server",
     "Works offline once the page has loaded",
     "Image, audio, video and PDF conversion",
+    "Merge several PDF files into one",
   ],
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   description:
@@ -119,7 +121,7 @@ const KIND_INTRO: Record<FormatKind, string> = {
   video:
     "Clips and screen recordings — swap container, re-encode, or pull the soundtrack out as an audio file.",
   document:
-    "Turn every page of a PDF into an image you can crop, share or post.",
+    "Turn every page of a PDF into an image, turn images into a PDF, or merge several PDFs into one.",
 };
 
 const POPULAR_RANK = new Map<string, number>(
@@ -245,6 +247,24 @@ export default function FilesPage() {
                 {KIND_INTRO[kind]}
               </p>
             </div>
+            {kind === "document" && (
+              <div className="flex flex-col gap-2">
+                <h3 className="text-sm font-semibold">PDF tools</h3>
+                <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                  {FILE_TOOLS.map((tool) => (
+                    <li key={tool.slug}>
+                      <ConverterCard
+                        href={tool.href}
+                        kind="file"
+                        eyebrow="PDF tool"
+                        title={tool.title}
+                        subtitle={tool.subtitle}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             {bySourceFormat(conversions).map((bucket) => (
               <div key={bucket.format.id} className="flex flex-col gap-2">
                 <h3 className="text-sm font-semibold">

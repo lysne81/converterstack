@@ -13,6 +13,7 @@ import {
   getFileConversionsByKind,
 } from "../lib/files/registry";
 import { FORMAT_KIND_HEADINGS } from "../lib/files/formats";
+import { FILE_TOOLS } from "../lib/files/tools";
 import ConverterCard from "./ConverterCard";
 
 type TabValue = Category | "timezone" | "currency" | "file";
@@ -87,10 +88,22 @@ export default function ConverterBrowser() {
               <h3 className="text-sm font-semibold">
                 {FORMAT_KIND_HEADINGS[kind]}{" "}
                 <span className="font-normal text-zinc-500 dark:text-zinc-400">
-                  ({conversions.length})
+                  ({conversions.length + (kind === "document" ? FILE_TOOLS.length : 0)})
                 </span>
               </h3>
               <ul className="grid auto-rows-min grid-cols-2 gap-2 sm:grid-cols-3">
+                {kind === "document" &&
+                  FILE_TOOLS.map((tool) => (
+                    <li key={tool.slug}>
+                      <ConverterCard
+                        href={tool.href}
+                        kind="file"
+                        eyebrow="PDF tool"
+                        title={tool.title}
+                        subtitle={tool.subtitle}
+                      />
+                    </li>
+                  ))}
                 {conversions.map((conversion) => (
                   <li key={fileSlugFor(conversion.from, conversion.to)}>
                     <ConverterCard

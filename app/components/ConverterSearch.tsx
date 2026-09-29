@@ -26,6 +26,7 @@ import {
     getTargetsFor,
 } from "../lib/files/registry";
 import {FILE_FORMATS, formatKeys} from "../lib/files/formats";
+import {FILE_TOOLS} from "../lib/files/tools";
 import type {FileConversion, FileFormat} from "../lib/files/types";
 import ConverterCard from "./ConverterCard";
 
@@ -512,6 +513,23 @@ export default function ConverterSearch() {
     // direction); one token → its most popular conversions; a generic term →
     // the hub.
     const beforeFiles = specials.length;
+    // Non-conversion tools: named directly ("merge", "combine"), or offered
+    // first whenever the query is about PDFs.
+    const pdfQuery = fileTokens.some((cands) =>
+        cands.some((format) => format.id === "pdf"),
+    );
+    for (const tool of FILE_TOOLS) {
+        if (pdfQuery || tokens.some((t) => matchesTerm(t, tool.keywords))) {
+            specials.push({
+                key: `tool-${tool.slug}`,
+                href: tool.href,
+                kind: "file",
+                eyebrow: "PDF tool",
+                title: tool.title,
+                subtitle: tool.subtitle,
+            });
+        }
+    }
     if (fileTokens.length >= 2) {
         const conversion = firstConversion(fileTokens[0], fileTokens[1]);
         if (conversion) specials.push(fileSpecial(conversion));

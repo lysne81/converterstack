@@ -25,6 +25,7 @@ import {
   useTargetSupport,
 } from "../../lib/files/support";
 import { createZip } from "../../lib/files/zip";
+import { formatBytes, saveBlob } from "../../lib/files/download";
 import {
   DEFAULT_CONVERT_OPTIONS,
   type ConvertOptions,
@@ -114,18 +115,6 @@ const PAGE_SIZES = [
   { value: "letter" as const, label: "Letter (8.5 × 11 in)" },
 ];
 
-function formatBytes(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  const units = ["KB", "MB", "GB"];
-  let value = bytes / 1024;
-  let unit = 0;
-  while (value >= 1024 && unit < units.length - 1) {
-    value /= 1024;
-    unit++;
-  }
-  return `${value < 10 ? value.toFixed(1) : Math.round(value)} ${units[unit]}`;
-}
-
 /** Bits per second as the units people actually recognise. */
 function formatBitrate(bps: number): string {
   if (bps >= 1_000_000) {
@@ -133,40 +122,6 @@ function formatBitrate(bps: number): string {
     return `${mbps % 1 === 0 ? mbps : mbps.toFixed(1)} Mbps`;
   }
   return `${Math.round(bps / 1000)} kbps`;
-}
-
-/** Assumed worst-case write speed when sizing the revoke delay. */
-const DOWNLOAD_BYTES_PER_SECOND = 10 * 1024 * 1024;
-
-const MIN_REVOKE_MS = 10_000;
-const MAX_REVOKE_MS = 10 * 60_000;
-
-/**
- * Revoking a `blob:` URL while the browser is still streaming it to disk
- * cancels the download, so the delay grows with the file: 10 s for a small
- * image, about a minute for a 500 MB video.
- */
-function revokeDelay(bytes: number): number {
-  const estimate =
-    MIN_REVOKE_MS + (bytes / DOWNLOAD_BYTES_PER_SECOND) * 1_000;
-  return Math.min(MAX_REVOKE_MS, estimate);
-}
-
-/**
- * Hand a blob to the browser as a download. The URL deliberately outlives the
- * component — clearing the list or navigating away must not kill a download in
- * progress — but every URL created here has exactly one revoke scheduled for
- * it, so nothing is leaked.
- */
-function saveBlob(blob: Blob, name: string) {
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = name;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  setTimeout(() => URL.revokeObjectURL(url), revokeDelay(blob.size));
 }
 
 function outputSize(item: Item): number {
@@ -574,7 +529,7 @@ export default function FileConverter({
     if (entries.length === 0) return;
     setMerging(true);
     try {
-      const { mergePdfs } = await import("../../lib/files/converters/pdf-build");
+      const { mergePdfs } = await import("../../lib/files/pdf-merge");
       const pdf = await mergePdfs(entries.map((output) => output.blob));
       saveBlob(pdf, `converted-${from.id}-to-pdf.pdf`);
     } finally {

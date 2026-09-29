@@ -6,6 +6,7 @@ import { getStaticCurrencies } from "./lib/currency-static";
 import { SITE_URL } from "./lib/site";
 import { getConversionPairs, slugFor } from "./lib/units";
 import { fileSlugFor, getFileConversions } from "./lib/files/registry";
+import { FILE_TOOLS } from "./lib/files/tools";
 
 export const dynamic = "force-static";
 
@@ -43,6 +44,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.8,
     },
+    ...FILE_TOOLS.map((tool) => ({
+      url: `${SITE_URL}${tool.href}`,
+      lastModified,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
     {
       url: `${SITE_URL}/about`,
       lastModified,
