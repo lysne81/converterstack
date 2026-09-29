@@ -210,6 +210,7 @@ export default function FileConverter({
   const [stale, setStale] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [zipping, setZipping] = useState(false);
+  const [merging, setMerging] = useState(false);
   const [oversized, setOversized] = useState<string[]>([]);
 
   const fileInputId = useId();
@@ -568,7 +569,21 @@ export default function FileConverter({
     }
   }
 
+  /** Every converted image as one page, in the order the files are listed. */
+  async function downloadMergedPdf(entries: ConvertOutput[]) {
+    if (entries.length === 0) return;
+    setMerging(true);
+    try {
+      const { mergePdfs } = await import("../../lib/files/converters/pdf-build");
+      const pdf = await mergePdfs(entries.map((output) => output.blob));
+      saveBlob(pdf, `converted-${from.id}-to-pdf.pdf`);
+    } finally {
+      setMerging(false);
+    }
+  }
+
   const allOutputs = items.flatMap((item) => item.outputs);
+  const canMergePdf = to.id === "pdf" && allOutputs.length > 1;
   const doneCount = items.filter((item) => item.status === "done").length;
   const errorCount = items.filter((item) => item.status === "error").length;
   const queuedCount = items.filter((item) => item.queued).length;
@@ -1273,6 +1288,18 @@ export default function FileConverter({
           </ul>
 
           <div className="flex flex-wrap items-center gap-2">
+            {canMergePdf && (
+              <button
+                type="button"
+                onClick={() => downloadMergedPdf(allOutputs)}
+                disabled={merging || busy}
+                className="rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-60"
+              >
+                {merging
+                  ? "Combining…"
+                  : `Download as one PDF (${allOutputs.length} pages)`}
+              </button>
+            )}
             {allOutputs.length > 1 && (
               <button
                 type="button"
@@ -1283,11 +1310,17 @@ export default function FileConverter({
                   )
                 }
                 disabled={zipping || busy}
-                className="rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-60"
+                className={
+                  canMergePdf
+                    ? "rounded-full border border-black/15 px-4 py-2 text-sm font-medium transition-colors hover:bg-black/[.05] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-60 dark:border-white/20 dark:hover:bg-white/[.08]"
+                    : "rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-60"
+                }
               >
                 {zipping
                   ? "Packing…"
-                  : `Download all (${allOutputs.length}) as .zip`}
+                  : canMergePdf
+                    ? `Download separate PDFs as .zip`
+                    : `Download all (${allOutputs.length}) as .zip`}
               </button>
             )}
             <button

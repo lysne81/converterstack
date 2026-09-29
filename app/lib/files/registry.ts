@@ -268,7 +268,7 @@ export function conversionNotes(conversion: FileConversion): string[] {
 
   if (to.kind === "document") {
     notes.push(
-      "Every image you add becomes one page, in the order the files are listed.",
+      "Each image becomes a one-page PDF. Add several and use “Download as one PDF” to combine them into a single document, with pages in the order the files are listed.",
     );
   }
 

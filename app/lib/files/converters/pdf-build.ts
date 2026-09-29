@@ -61,6 +61,23 @@ function placeOnPage(
   };
 }
 
+/**
+ * Join already-built PDFs into one document, keeping their order. Pages are
+ * copied as-is, so the page size and image settings each file was converted
+ * with carry over without decoding any image a second time.
+ */
+export async function mergePdfs(pdfs: Blob[]): Promise<Blob> {
+  const { PDFDocument } = await import("@cantoo/pdf-lib");
+  const merged = await PDFDocument.create();
+  for (const pdf of pdfs) {
+    const source = await PDFDocument.load(await pdf.arrayBuffer());
+    const pages = await merged.copyPages(source, source.getPageIndices());
+    for (const page of pages) merged.addPage(page);
+  }
+  const bytes = await merged.save();
+  return new Blob([bytes], { type: "application/pdf" });
+}
+
 /** Wrap a single image in a one-page PDF. */
 export async function buildPdfFromImage(
   request: ConvertRequest,
